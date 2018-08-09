@@ -1,12 +1,15 @@
 环境搭建
 
 zookeeper-3.4.10：
+
     1.配置zookeeper  的配置文件  conf/zoo.cfg
         dataDir=D:/bigdata/zookeeper-3.4.10/data
         其他参数默认
     2.启动zookeeper   
         bin/zkServer.cmd
+        
 kafka_2.11-2.0.0:
+
     1.进入kafka配置文件所在目录，D:\bigdata\kafka_2.11-0.9.0.1\config
     2.编辑文件"server.properties"，找到并编辑：
         log.dirs=/tmp/kafka-logs  to  log.dirs=D:/bigdata/kafka_2.11-0.9.0.1/kafka-logs 或者 D:\\bigdata\\kafka_2.11-0.9.0.1\\kafka-logs
@@ -25,50 +28,56 @@ kafka_2.11-2.0.0:
         #./windows/kafka-console-consumer.bat --zookeeper localhost:2181 --topic test0811   消费者   2.11版本不合适
         ./windows/kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test0811 --from-beginning  消费者 此命令可以使用
     
+    
 
 客户端Demo:
 
+
 生产者：
 
-public class ProducerDemo {
-    public static void main(String [] args){
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
-        //props.put("client.id", "DemoProducer");
-        props.put("acks", "all");
-        props.put("retries", 0);
-        props.put("batch.size", 16384);
-        props.put("linger.ms", 1);
-        props.put("buffer.memory", 33554432);
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
- 
-        Producer<String, String> producer = new KafkaProducer<String, String>(props);
-        for (int i = 0; i < 100; i++)
-            producer.send(new ProducerRecord<String, String>("test0811", Integer.toString(i), Integer.toString(i)));
- 
-        producer.close();
- 
-    }
-}
-    消费者：
 
-public class ConsumerDemo {
-    public static void main(String [] args){
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
-        props.put("group.id", "test-consumer-group");//consumer.properties 中的 group.id
-        props.put("enable.auto.commit", "true");
-        props.put("auto.commit.interval.ms", "1000");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
-        consumer.subscribe(Arrays.asList("test0811"));//设置主题，可多个
-        while (true) {
-            System.out.println("********");
-            ConsumerRecords<String, String> records = consumer.poll(1000);
-            for (ConsumerRecord<String, String> record : records)
-                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+    public class ProducerDemo {
+        public static void main(String [] args){
+            Properties props = new Properties();
+            props.put("bootstrap.servers", "localhost:9092");
+            //props.put("client.id", "DemoProducer");
+            props.put("acks", "all");
+            props.put("retries", 0);
+            props.put("batch.size", 16384);
+            props.put("linger.ms", 1);
+            props.put("buffer.memory", 33554432);
+            props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+            props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+     
+            Producer<String, String> producer = new KafkaProducer<String, String>(props);
+            for (int i = 0; i < 100; i++)
+                producer.send(new ProducerRecord<String, String>("test0811", Integer.toString(i), Integer.toString(i)));
+     
+            producer.close();
+     
         }
     }
-}
+消费者：
+
+
+
+
+    public class ConsumerDemo {
+        public static void main(String [] args){
+            Properties props = new Properties();
+            props.put("bootstrap.servers", "localhost:9092");
+            props.put("group.id", "test-consumer-group");//consumer.properties 中的 group.id
+            props.put("enable.auto.commit", "true");
+            props.put("auto.commit.interval.ms", "1000");
+            props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+            props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+            KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
+            consumer.subscribe(Arrays.asList("test0811"));//设置主题，可多个
+            while (true) {
+                System.out.println("********");
+                ConsumerRecords<String, String> records = consumer.poll(1000);
+                for (ConsumerRecord<String, String> record : records)
+                    System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+            }
+        }
+    }
